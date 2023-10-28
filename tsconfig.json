@@ -14,13 +14,12 @@
     "module": "ESNext",
     "declaration": true,
     "declarationDir": "types",
+    "emitDeclarationOnly": true,
     "sourceMap": false,
     "outDir": "dist",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "noEmit": true,
-    "jsx": "react",
-    "strictNullChecks": false
+    "jsx": "react"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "build"]
