@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
+import { keys, keyList } from '../constants';
+import { addAnchors } from '../utils';
+
 interface IPatternReplace {
   key: RegExp;
   value: RegExp;
@@ -52,9 +55,11 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
     return () => {
       removeEvent();
     };
-  }, []);
+  }, [inputRef]);
 
   useEffect(() => {
+    const regExp = addAnchors(replace.key);
+
     if (strict === true) {
       const symbols: string[] = new Array(mask.length);
       let correct = 0;
@@ -62,7 +67,7 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
       for (let index = 0; index < mask.length; index++) {
         const current = mask[index];
 
-        if (replace.key.test(current)) {
+        if (regExp.test(current)) {
           symbols[index] = current;
           correct++;
         }
@@ -78,13 +83,15 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
   }, []);
 
   useEffect(() => {
+    const regExp = addAnchors(replace.key);
+
     if (!strict) {
       const sep: string[] = [];
 
       for (let index = 0; index < mask.length; index++) {
         const current = mask[index];
 
-        if (!replace.key.test(current)) {
+        if (!regExp.test(current)) {
           sep.push(current);
         }
       }
@@ -112,8 +119,10 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
       return;
     }
 
+    const valueRegExp = addAnchors(replace.value);
+
     if (strict === true) {
-      if (!replace.value.test(currentKey)) {
+      if (!valueRegExp.test(currentKey)) {
         return;
       }
 
@@ -163,6 +172,10 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
       let partIndex = 0;
       const newChanges: boolean[] = [...changes];
 
+      if (keyList.includes(currentKey)) {
+        pos = cursorPosition - 1;
+      }
+
       while (left <= pos || right > pos) {
         if (left <= pos) {
           if (positions.includes(value[left])) {
@@ -189,13 +202,32 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
       }
 
       if (
-        !replace.value.test(currentKey) &&
+        !valueRegExp.test(currentKey) &&
+        !keyList.includes(currentKey) &&
         currentKey !== positions[partIndex]
       ) {
         return;
       }
 
-      if (
+      if (currentKey === keys.backspace) {
+        pos = cursorPosition;
+
+        if (newChanges[partIndex] === false) {
+          newValue = `${value.slice(0, leftIndex)}${value.slice(
+            rightIndex + 1,
+          )}`;
+          pos = leftIndex - 1;
+          newChanges[partIndex] = true;
+        } else {
+          if (value[pos] === positions[partIndex]) {
+            newValue = value;
+          } else {
+            newValue = `${value.slice(0, pos)}${value.slice(pos + 1)}`;
+          }
+
+          pos--;
+        }
+      } else if (
         newChanges[partIndex] === false &&
         currentKey !== positions[partIndex]
       ) {
