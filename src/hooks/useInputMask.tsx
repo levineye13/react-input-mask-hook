@@ -16,6 +16,13 @@ interface IMask {
   readonly pattern?: string;
 }
 
+interface IReturnMask {
+  readonly value: string;
+  readonly error: string;
+  readonly isValid: boolean;
+  readonly onChange: () => void;
+}
+
 type TPosition = {
   positions: string[];
   index: number;
@@ -23,7 +30,13 @@ type TPosition = {
   cursor: number;
 };
 
-const useMask = ({ inputRef, mask, replace, strict, pattern }: IMask) => {
+const useMask = ({
+  inputRef,
+  mask,
+  replace,
+  strict,
+  pattern,
+}: IMask): IReturnMask => {
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isValid, setIsValid] = useState<boolean>(false);
@@ -302,13 +315,6 @@ const useMask = ({ inputRef, mask, replace, strict, pattern }: IMask) => {
       setValue(newValue);
     }
   };
-
-  if (strict === true) {
-    return {
-      value,
-      onChange,
-    };
-  }
 
   return {
     isValid,
