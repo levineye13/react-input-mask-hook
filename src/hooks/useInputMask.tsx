@@ -13,6 +13,7 @@ interface IMask {
   readonly mask: string;
   readonly replace: IPatternReplace;
   readonly strict?: boolean;
+  readonly pattern?: string;
 }
 
 type TPosition = {
@@ -22,8 +23,10 @@ type TPosition = {
   cursor: number;
 };
 
-const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
+const useMask = ({ inputRef, mask, replace, strict, pattern }: IMask) => {
   const [value, setValue] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [isValid, setIsValid] = useState<boolean>(false);
   const [position, setPosition] = useState<TPosition>({
     positions: [],
     index: 0,
@@ -58,9 +61,22 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
   }, [inputRef]);
 
   useEffect(() => {
-    const regExp = addAnchors(replace.key);
+    if (inputRef.current && typeof pattern === 'string' && !strict) {
+      inputRef.current.pattern = pattern;
 
+      if (inputRef.current.checkValidity()) {
+        setIsValid(true);
+        setError('');
+      } else {
+        setIsValid(false);
+        setError(inputRef.current.validationMessage);
+      }
+    }
+  }, [inputRef, value]);
+
+  useEffect(() => {
     if (strict === true) {
+      const regExp = addAnchors(replace.key);
       const symbols: string[] = new Array(mask.length);
       let correct = 0;
 
@@ -83,9 +99,8 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
   }, []);
 
   useEffect(() => {
-    const regExp = addAnchors(replace.key);
-
     if (!strict) {
+      const regExp = addAnchors(replace.key);
       const sep: string[] = [];
 
       for (let index = 0; index < mask.length; index++) {
@@ -132,7 +147,7 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
       let pos = position.index;
       let { cursor } = position;
 
-      if (cursorPosition !== position.cursor + 1 && pos !== 0) {
+      if (cursorPosition !== cursor + 1 && pos !== 0) {
         pos = cursorPosition - 2;
         cursor = pos + 1;
       }
@@ -276,6 +291,8 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
         newValue = value;
       }
 
+      setError(inputRef.current.validationMessage);
+      setIsValid(inputRef.current.validity.valid);
       setChanges(newChanges);
       setPosition({
         ...position,
@@ -286,8 +303,17 @@ const useMask = ({ inputRef, mask, replace, strict }: IMask) => {
     }
   };
 
+  if (strict === true) {
+    return {
+      value,
+      onChange,
+    };
+  }
+
   return {
+    isValid,
     value,
+    error,
     onChange,
   };
 };
