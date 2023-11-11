@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { keys, keyList } from '../constants';
-import { addAnchors, addPatternAnchors } from '../utils';
+import { addAnchors, normalizePattern } from '../utils';
 
 interface IPatternReplace {
   key: RegExp;
@@ -49,6 +49,14 @@ const useMask = ({
   const [changes, setChanges] = useState<boolean[]>([]);
   const [currentKey, setCurrentKey] = useState<string>('');
 
+  const normalizedPattern = useMemo<string>(() => {
+    if (typeof pattern === 'string') {
+      return normalizePattern(pattern);
+    }
+
+    return '';
+  }, [pattern]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       setCurrentKey(e.key);
@@ -71,7 +79,7 @@ const useMask = ({
 
   useEffect(() => {
     if (inputRef.current && typeof pattern === 'string') {
-      inputRef.current.pattern = addPatternAnchors(pattern);
+      inputRef.current.pattern = normalizedPattern;
       const isInputValid = inputRef.current.checkValidity();
 
       if (isInputValid) {

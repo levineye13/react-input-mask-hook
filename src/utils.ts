@@ -13,7 +13,7 @@ export const addAnchors = (regExp: RegExp): RegExp => {
   return new RegExp(splited[1], splited[2]);
 };
 
-export const addPatternAnchors = (regExp: string): string => {
+export const normalizePattern = (regExp: string): string => {
   const splited = regExp.split('/');
   let str = splited.length === 3 ? splited[1] : splited[0];
 
