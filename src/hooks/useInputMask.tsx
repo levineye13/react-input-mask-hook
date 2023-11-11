@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { keys, keyList } from '../constants';
-import { addAnchors } from '../utils';
+import { addAnchors, addPatternAnchors } from '../utils';
 
 interface IPatternReplace {
   key: RegExp;
@@ -37,7 +37,7 @@ const useMask = ({
   strict,
   pattern,
 }: IMask): IReturnMask => {
-  const [value, setValue] = useState<string>('');
+  const [value, setValue] = useState<string>(mask);
   const [error, setError] = useState<string>('');
   const [isValid, setIsValid] = useState<boolean>(false);
   const [position, setPosition] = useState<TPosition>({
@@ -48,10 +48,6 @@ const useMask = ({
   });
   const [changes, setChanges] = useState<boolean[]>([]);
   const [currentKey, setCurrentKey] = useState<string>('');
-
-  useEffect(() => {
-    setValue(mask);
-  }, [mask]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -74,10 +70,11 @@ const useMask = ({
   }, [inputRef]);
 
   useEffect(() => {
-    if (inputRef.current && typeof pattern === 'string' && !strict) {
-      inputRef.current.pattern = pattern;
+    if (inputRef.current && typeof pattern === 'string') {
+      inputRef.current.pattern = addPatternAnchors(pattern);
+      const isInputValid = inputRef.current.checkValidity();
 
-      if (inputRef.current.checkValidity()) {
+      if (isInputValid) {
         setIsValid(true);
         setError('');
       } else {
@@ -304,8 +301,6 @@ const useMask = ({
         newValue = value;
       }
 
-      setError(inputRef.current.validationMessage);
-      setIsValid(inputRef.current.validity.valid);
       setChanges(newChanges);
       setPosition({
         ...position,
