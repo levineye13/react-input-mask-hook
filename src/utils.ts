@@ -14,8 +14,7 @@ export const addAnchors = (regExp: RegExp): RegExp => {
 };
 
 export const normalizePattern = (regExp: string): string => {
-  const splited = regExp.split('/');
-  let str = splited.length === 3 ? splited[1] : splited[0];
+  let str = regExp;
 
   if (str[0] !== '^') {
     str = `^${str}`;
