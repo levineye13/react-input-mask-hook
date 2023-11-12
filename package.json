@@ -1,18 +1,35 @@
 {
   "name": "react-input-mask-hook",
   "version": "1.0.0",
-  "description": "",
+  "description": "React hook for connecting to the input of a strict/non-strict mask.",
   "main": "dist/esm/index.js",
   "module": "dist/cjs/index.js",
+  "files": [
+    "dist/**/*"
+  ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/levineye13/react-input-mask-hook.git"
+  },
+  "keywords": [
+    "react",
+    "input",
+    "hook",
+    "mask",
+    "typescript"
+  ],
+  "author": {
+    "name": "Oleg Zharov",
+    "email": "levineye@gmail.com",
+    "url": "https://levineye13.github.io/portfolio/"
+  },
+  "homepage": "https://github.com/levineye13/react-input-mask-hook#readme",
   "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.5",
