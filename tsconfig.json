@@ -16,6 +16,7 @@
     "declarationDir": "types",
     "emitDeclarationOnly": true,
     "sourceMap": false,
+    "rootDir": "src",
     "outDir": "dist",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,

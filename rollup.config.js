@@ -1,9 +1,9 @@
-import typescript from '@rollup/plugin-typescript';
-import { dts } from 'rollup-plugin-dts';
+const typescript = require('@rollup/plugin-typescript');
+const dts = require('rollup-plugin-dts');
 
-import packageJson from './package.json';
+const packageJson = require('./package.json');
 
-export default [
+module.exports = [
   {
     input: './src/index.ts',
     output: [
@@ -24,11 +24,13 @@ export default [
     external: ['react'],
   },
   {
-    input: './dist/types/index.d.ts',
-    output: {
-      file: packageJson.types,
-      format: 'esm',
-      plugins: [dts()],
-    },
+    input: './dist/esm/types/index.d.ts',
+    output: [
+      {
+        file: packageJson.types,
+        format: 'esm',
+      },
+    ],
+    plugins: [dts.default()],
   },
 ];
